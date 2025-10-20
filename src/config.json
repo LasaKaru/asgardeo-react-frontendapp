@@ -1,0 +1,14 @@
+{
+    "asgardeo": {
+        "clientID": "hfZ01tqryBabNjpzYkDPTHyIwKka",
+        "baseUrl": "https://api.asgardeo.io/t/googlextech",
+        "signInRedirectURL": "http://localhost:3000",
+        "signOutRedirectURL": "http://localhost:3000",
+        "scope": ["openid", "profile"],
+        "clientOrigin": "http://localhost:3000",
+        "clientOriginCheck": true
+    },
+    "apiBaseUrl": "http://localhost:8080/api",
+    "appName": "Real Estate Management System",
+    "appUrl": "http://localhost:3000"
+}
