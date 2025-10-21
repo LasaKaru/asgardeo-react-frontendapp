@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { FunctionComponent, ReactElement, useContext, useEffect } from "react";
+=======
+import React, { FunctionComponent, ReactElement, useContext } from "react";
+>>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "@asgardeo/auth-react";
 import { CustomAuthContext } from "../app";
@@ -15,6 +19,7 @@ export const DashboardPage: FunctionComponent = (): ReactElement => {
     const location = useLocation();
 
     // Check if user is authenticated with either method
+<<<<<<< HEAD
     const asgardeoIsAuthenticated = asgardeoAuth.state?.isAuthenticated;
     const customIsAuthenticated = customAuth?.isAuthenticated;
     const isAuthenticated = asgardeoIsAuthenticated || customIsAuthenticated;
@@ -80,6 +85,15 @@ export const DashboardPage: FunctionComponent = (): ReactElement => {
     }
     
     // If we reach here, the user is authenticated, so show the dashboard
+=======
+    const isAuthenticated = asgardeoAuth.state?.isAuthenticated || customAuth?.isAuthenticated;
+    
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+        navigate('/');
+        return null;
+    }
+>>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
 
     const handleNavigation = (path: string) => {
         navigate(path);
@@ -89,6 +103,7 @@ export const DashboardPage: FunctionComponent = (): ReactElement => {
         if (asgardeoAuth.state?.isAuthenticated) {
             // Use Asgardeo's signOut method which will handle the OIDC logout
             asgardeoAuth.signOut(() => {
+<<<<<<< HEAD
                 // Redirect to login page after logout
                 navigate('/login');
             }).catch((error) => {
@@ -99,6 +114,18 @@ export const DashboardPage: FunctionComponent = (): ReactElement => {
         } else if (customAuth?.isAuthenticated) {
             customAuth.logout();
             navigate('/login');
+=======
+                // Redirect to home page after logout
+                navigate('/');
+            }).catch((error) => {
+                console.error('Error during Asgardeo logout:', error);
+                // Even if logout fails, redirect to home page
+                navigate('/');
+            });
+        } else if (customAuth?.isAuthenticated) {
+            customAuth.logout();
+            navigate('/');
+>>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
         }
     };
 
