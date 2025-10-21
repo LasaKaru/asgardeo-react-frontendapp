@@ -17,11 +17,7 @@
  */
 
 import { AuthProvider, useAuthContext } from "@asgardeo/auth-react";
-<<<<<<< HEAD
 import React, { FunctionComponent, ReactElement, createContext, useState, useEffect } from "react";
-=======
-import React, { FunctionComponent, ReactElement, createContext, useState } from "react";
->>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
 import { render } from "react-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./app.css";
@@ -35,12 +31,8 @@ import {
   OwnersPage, 
   LeasesPage, 
   PaymentsPage, 
-<<<<<<< HEAD
   MaintenancePage,
   LoginPage
-=======
-  MaintenancePage 
->>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
 } from "./pages";
 
 // Create a simple authentication context for custom login
@@ -57,7 +49,6 @@ export const CustomAuthContext = createContext<CustomAuthContextType | null>(nul
 const AppWithAsgardeo: FunctionComponent = (): ReactElement => {
     const asgardeoAuth = useAuthContext();
     
-<<<<<<< HEAD
     // Debugging: log authentication state
     useEffect(() => {
         console.log('AppWithAsgardeo auth state:', {
@@ -66,8 +57,6 @@ const AppWithAsgardeo: FunctionComponent = (): ReactElement => {
         });
     }, [asgardeoAuth.state]);
     
-=======
->>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
     // Custom authentication state
     const [customAuth, setCustomAuth] = useState({
         isAuthenticated: false,
@@ -106,10 +95,7 @@ const AppWithAsgardeo: FunctionComponent = (): ReactElement => {
             <Router>
                 <Routes>
                     <Route path="/" element={<HomePage />} />
-<<<<<<< HEAD
                     <Route path="/login" element={<LoginPage />} />
-=======
->>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/properties" element={<PropertiesPage />} />
                     <Route path="/tenants" element={<TenantsPage />} />

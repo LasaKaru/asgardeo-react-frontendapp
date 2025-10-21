@@ -24,9 +24,5 @@ export { TenantsPage } from "./tenants";
 export { OwnersPage } from "./owners";
 export { LeasesPage } from "./leases";
 export { PaymentsPage } from "./payments";
-<<<<<<< HEAD
 export { MaintenancePage } from "./maintenance";
 export { LoginPage } from "./login";
-=======
-export { MaintenancePage } from "./maintenance";
->>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6

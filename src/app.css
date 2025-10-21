@@ -345,39 +345,23 @@ code {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-<<<<<<< HEAD
     background: #eeeff3;
-=======
-    background: #ffffff;
->>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
     padding: 20px;
 }
 
 .login-card {
-<<<<<<< HEAD
     background: #ffffff;
-=======
-    background: #fff;
->>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
     border-radius: 12px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 450px;
     overflow: hidden;
-<<<<<<< HEAD
     border: 1px solid #d9dce0;
-=======
-    border: 1px solid #e2e8f0;
->>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
 }
 
 .login-header {
     background: linear-gradient(135deg, #2c7be5, #0056b3);
-<<<<<<< HEAD
     color: rgb(255, 255, 255);
-=======
-    color: white;
->>>>>>> f6d388849ef5e7386028c4f31334f996f81d3ec6
     padding: 30px;
     text-align: center;
 }
