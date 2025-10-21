@@ -345,23 +345,23 @@ code {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: #ffffff;
+    background: #eeeff3;
     padding: 20px;
 }
 
 .login-card {
-    background: #fff;
+    background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 450px;
     overflow: hidden;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #d9dce0;
 }
 
 .login-header {
     background: linear-gradient(135deg, #2c7be5, #0056b3);
-    color: white;
+    color: rgb(255, 255, 255);
     padding: 30px;
     text-align: center;
 }

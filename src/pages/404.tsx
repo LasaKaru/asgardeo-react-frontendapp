@@ -36,7 +36,7 @@ export const NotFoundPage: FunctionComponent = (): ReactElement => {
             <h3>
                 404: Page not found
             </h3>
-            <button className="btn primary" onClick={() => { navigate("/home") }}>Go back to home</button>
+            <button className="btn primary" onClick={() => { navigate("/login") }}>Go back to home</button>
         </DefaultLayout>
     );
 };

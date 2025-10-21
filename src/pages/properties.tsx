@@ -50,7 +50,7 @@ export const PropertiesPage: FunctionComponent = (): ReactElement => {
     
     // If user is not authenticated, redirect to login
     if (!isAuthenticated) {
-        navigate('/');
+        navigate('/login');
         return null;
     }
 
@@ -72,10 +72,10 @@ export const PropertiesPage: FunctionComponent = (): ReactElement => {
 
     const handleLogout = () => {
         if (asgardeoAuth.state?.isAuthenticated) {
-            asgardeoAuth.signOut(() => navigate('/'));
+            asgardeoAuth.signOut(() => navigate('/login'));
         } else if (customAuth?.isAuthenticated) {
             customAuth.logout();
-            navigate('/');
+            navigate('/login');
         }
     };
 

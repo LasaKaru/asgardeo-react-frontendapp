@@ -25,3 +25,4 @@ export { OwnersPage } from "./owners";
 export { LeasesPage } from "./leases";
 export { PaymentsPage } from "./payments";
 export { MaintenancePage } from "./maintenance";
+export { LoginPage } from "./login";

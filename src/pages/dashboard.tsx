@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement, useContext } from "react";
+import React, { FunctionComponent, ReactElement, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "@asgardeo/auth-react";
 import { CustomAuthContext } from "../app";
@@ -15,13 +15,71 @@ export const DashboardPage: FunctionComponent = (): ReactElement => {
     const location = useLocation();
 
     // Check if user is authenticated with either method
-    const isAuthenticated = asgardeoAuth.state?.isAuthenticated || customAuth?.isAuthenticated;
+    const asgardeoIsAuthenticated = asgardeoAuth.state?.isAuthenticated;
+    const customIsAuthenticated = customAuth?.isAuthenticated;
+    const isAuthenticated = asgardeoIsAuthenticated || customIsAuthenticated;
     
-    // Redirect to login if not authenticated
+    // Debugging: log authentication state
+    React.useEffect(() => {
+        console.log('Dashboard auth state:', {
+            asgardeoIsAuthenticated,
+            customIsAuthenticated,
+            isAuthenticated,
+            asgardeoState: asgardeoAuth.state
+        });
+    }, [asgardeoIsAuthenticated, customIsAuthenticated, isAuthenticated, asgardeoAuth.state]);
+    
+    // Handle authentication state changes
+    useEffect(() => {
+        // If user is authenticated, stay on dashboard
+        if (isAuthenticated) {
+            console.log('User is authenticated, staying on dashboard');
+            return;
+        }
+        
+        console.log('User not authenticated, will check again in 1 second');
+        
+        // Only redirect to login if we're sure the user is not authenticated
+        // Give a small delay to allow authentication state to properly update
+        const timer = setTimeout(() => {
+            // Check again after delay
+            const currentlyAuthenticated = asgardeoAuth.state?.isAuthenticated || customAuth?.isAuthenticated;
+            console.log('Rechecking auth status after delay:', {
+                asgardeoIsAuthenticated: asgardeoAuth.state?.isAuthenticated,
+                customIsAuthenticated: customAuth?.isAuthenticated,
+                currentlyAuthenticated
+            });
+            
+            if (!currentlyAuthenticated) {
+                console.log('User not authenticated after delay, redirecting to login');
+                navigate('/login');
+            } else {
+                console.log('User is authenticated after delay, staying on dashboard');
+            }
+        }, 1000);
+        
+        return () => clearTimeout(timer);
+    }, [isAuthenticated, asgardeoAuth.state?.isAuthenticated, customAuth?.isAuthenticated, navigate]);
+    
+    // Show loading state while checking authentication
     if (!isAuthenticated) {
-        navigate('/');
-        return null;
+        // But don't redirect immediately, give time for auth state to update
+        return (
+            <div className="dashboard-loading">
+                <h2>Loading authentication status...</h2>
+                <p>Please wait while we verify your authentication status.</p>
+                <div>
+                    <p>Debug info:</p>
+                    <ul>
+                        <li>Asgardeo Authenticated: {asgardeoIsAuthenticated ? 'Yes' : 'No'}</li>
+                        <li>Custom Authenticated: {customIsAuthenticated ? 'Yes' : 'No'}</li>
+                    </ul>
+                </div>
+            </div>
+        );
     }
+    
+    // If we reach here, the user is authenticated, so show the dashboard
 
     const handleNavigation = (path: string) => {
         navigate(path);
@@ -31,16 +89,16 @@ export const DashboardPage: FunctionComponent = (): ReactElement => {
         if (asgardeoAuth.state?.isAuthenticated) {
             // Use Asgardeo's signOut method which will handle the OIDC logout
             asgardeoAuth.signOut(() => {
-                // Redirect to home page after logout
-                navigate('/');
+                // Redirect to login page after logout
+                navigate('/login');
             }).catch((error) => {
                 console.error('Error during Asgardeo logout:', error);
-                // Even if logout fails, redirect to home page
-                navigate('/');
+                // Even if logout fails, redirect to login page
+                navigate('/login');
             });
         } else if (customAuth?.isAuthenticated) {
             customAuth.logout();
-            navigate('/');
+            navigate('/login');
         }
     };
 

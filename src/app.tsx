@@ -17,7 +17,7 @@
  */
 
 import { AuthProvider, useAuthContext } from "@asgardeo/auth-react";
-import React, { FunctionComponent, ReactElement, createContext, useState } from "react";
+import React, { FunctionComponent, ReactElement, createContext, useState, useEffect } from "react";
 import { render } from "react-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./app.css";
@@ -31,7 +31,8 @@ import {
   OwnersPage, 
   LeasesPage, 
   PaymentsPage, 
-  MaintenancePage 
+  MaintenancePage,
+  LoginPage
 } from "./pages";
 
 // Create a simple authentication context for custom login
@@ -47,6 +48,14 @@ export const CustomAuthContext = createContext<CustomAuthContextType | null>(nul
 // Main app component with Asgardeo authentication
 const AppWithAsgardeo: FunctionComponent = (): ReactElement => {
     const asgardeoAuth = useAuthContext();
+    
+    // Debugging: log authentication state
+    useEffect(() => {
+        console.log('AppWithAsgardeo auth state:', {
+            asgardeoState: asgardeoAuth.state,
+            isAuthenticated: asgardeoAuth.state?.isAuthenticated
+        });
+    }, [asgardeoAuth.state]);
     
     // Custom authentication state
     const [customAuth, setCustomAuth] = useState({
@@ -86,6 +95,7 @@ const AppWithAsgardeo: FunctionComponent = (): ReactElement => {
             <Router>
                 <Routes>
                     <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<LoginPage />} />
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/properties" element={<PropertiesPage />} />
                     <Route path="/tenants" element={<TenantsPage />} />
