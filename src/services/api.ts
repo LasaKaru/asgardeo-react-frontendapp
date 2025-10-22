@@ -8,6 +8,8 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // Add credentials for CORS
+  withCredentials: true
 });
 
 // Add a request interceptor to include authentication
@@ -31,11 +33,18 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    // Handle CORS and other network errors
+    if (error.code === 'ERR_NETWORK' || (error.message && error.message.includes('CORS'))) {
+      console.error('Network error or CORS issue:', error.message);
+      // You might want to show a user-friendly message here
+    }
+    
     if (error.response?.status === 401) {
       // Handle unauthorized access
       // Redirect to login page
-      window.location.href = '/';
+      window.location.href = '/login';
     }
+    
     return Promise.reject(error);
   }
 );
@@ -71,27 +80,6 @@ export const apiService = {
     return apiClient.delete(`/properties/${id}`);
   },
 
-  // Tenants
-  getTenants: () => {
-    return apiClient.get('/tenants');
-  },
-  
-  getTenant: (id: number) => {
-    return apiClient.get(`/tenants/${id}`);
-  },
-  
-  createTenant: (tenant: any) => {
-    return apiClient.post('/tenants', tenant);
-  },
-  
-  updateTenant: (id: number, tenant: any) => {
-    return apiClient.put(`/tenants/${id}`, tenant);
-  },
-  
-  deleteTenant: (id: number) => {
-    return apiClient.delete(`/tenants/${id}`);
-  },
-
   // Owners
   getOwners: () => {
     return apiClient.get('/owners');
@@ -102,15 +90,66 @@ export const apiService = {
   },
   
   createOwner: (owner: any) => {
-    return apiClient.post('/owners', owner);
+    // Match the backend API structure
+    const ownerData = {
+      firstName: owner.firstName,
+      lastName: owner.lastName,
+      email: owner.email,
+      phone: owner.phone
+    };
+    return apiClient.post('/owners', ownerData);
   },
   
   updateOwner: (id: number, owner: any) => {
-    return apiClient.put(`/owners/${id}`, owner);
+    // Match the backend API structure
+    const ownerData = {
+      ownerId: id,
+      firstName: owner.firstName,
+      lastName: owner.lastName,
+      email: owner.email,
+      phone: owner.phone
+    };
+    return apiClient.put(`/owners/${id}`, ownerData);
   },
   
   deleteOwner: (id: number) => {
     return apiClient.delete(`/owners/${id}`);
+  },
+
+  // Tenants
+  getTenants: () => {
+    return apiClient.get('/tenants');
+  },
+  
+  getTenant: (id: number) => {
+    return apiClient.get(`/tenants/${id}`);
+  },
+  
+  createTenant: (tenant: any) => {
+    // Match the backend API structure
+    const tenantData = {
+      firstName: tenant.firstName,
+      lastName: tenant.lastName,
+      email: tenant.email,
+      phone: tenant.phone
+    };
+    return apiClient.post('/tenants', tenantData);
+  },
+  
+  updateTenant: (id: number, tenant: any) => {
+    // Match the backend API structure
+    const tenantData = {
+      tenantId: id,
+      firstName: tenant.firstName,
+      lastName: tenant.lastName,
+      email: tenant.email,
+      phone: tenant.phone
+    };
+    return apiClient.put(`/tenants/${id}`, tenantData);
+  },
+  
+  deleteTenant: (id: number) => {
+    return apiClient.delete(`/tenants/${id}`);
   },
 
   // Leases
@@ -157,23 +196,23 @@ export const apiService = {
 
   // Maintenance Requests
   getMaintenanceRequests: () => {
-    return apiClient.get('/maintenance-requests');
+    return apiClient.get('/requests');
   },
   
   getMaintenanceRequest: (id: number) => {
-    return apiClient.get(`/maintenance-requests/${id}`);
+    return apiClient.get(`/requests/${id}`);
   },
   
   createMaintenanceRequest: (request: any) => {
-    return apiClient.post('/maintenance-requests', request);
+    return apiClient.post('/requests', request);
   },
   
   updateMaintenanceRequest: (id: number, request: any) => {
-    return apiClient.put(`/maintenance-requests/${id}`, request);
+    return apiClient.put(`/requests/${id}`, request);
   },
   
   deleteMaintenanceRequest: (id: number) => {
-    return apiClient.delete(`/maintenance-requests/${id}`);
+    return apiClient.delete(`/requests/${id}`);
   },
 };
 

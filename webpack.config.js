@@ -55,6 +55,17 @@ module.exports = async () => {
             host: HOST,
             allowedHosts: devServerHostCheckDisabled ? "all" : undefined,
             port: PORT,
+            // Add proxy for API requests to avoid CORS issues
+            proxy: {
+                '/api': {
+                    target: 'https://localhost:7049',
+                    secure: false, // Accept self-signed certificates
+                    changeOrigin: true,
+                    pathRewrite: {
+                        '^/api': '/api'
+                    }
+                }
+            }
         },
         devtool: "source-map",
         entry: [ "./src/app.tsx" ],

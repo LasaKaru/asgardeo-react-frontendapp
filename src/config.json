@@ -8,7 +8,7 @@
         "clientOrigin": "http://localhost:3001",
         "clientOriginCheck": true
     },
-    "apiBaseUrl": "http://localhost:8080/api",
+    "apiBaseUrl": "/api",
     "appName": "Real Estate Management System",
     "appUrl": "http://localhost:3001"
 }
