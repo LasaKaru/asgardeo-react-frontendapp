@@ -18,33 +18,31 @@ A comprehensive frontend application for managing real estate properties, tenant
 ### Prerequisites
 
 - Node.js (version 12 or above)
-- Real Estate Backend API (Spring Boot with Kotlin)
+- Real Estate Backend API (.NET 8 with Entity Framework)
 
 ### Backend Setup
 
 Make sure you have the Real Estate Backend running:
 
 1. Database Setup
-```sql
-CREATE DATABASE real_estate_db;
-CREATE USER realestate_user WITH PASSWORD 'realestate_pass';
-GRANT ALL PRIVILEGES ON DATABASE real_estate_db TO realestate_user;
-```
+The .NET backend uses Entity Framework with Code First approach. The database will be created automatically when you run the application for the first time.
 
 2. Configuration
-Update `src/main/resources/application.properties` if needed:
-```
-spring.datasource.url=jdbc:postgresql://localhost:5432/real_estate_db
-spring.datasource.username=realestate_user
-spring.datasource.password=realestate_pass
+Update `appsettings.json` if needed:
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=RealEstateDB;Trusted_Connection=true;TrustServerCertificate=true;"
+  }
+}
 ```
 
 3. Run the Application
 ```bash
-./gradlew bootRun
+dotnet run
 ```
 
-The backend will run on http://localhost:8080
+The backend will run on https://localhost:7049
 
 ### Frontend Setup
 
@@ -58,7 +56,7 @@ npm install
 npm start
 ```
 
-The app should open at [`http://localhost:3000`](http://localhost:3000)
+The app should open at [`http://localhost:3001`](http://localhost:3001)
 
 ### Default Credentials
 
@@ -89,6 +87,27 @@ The frontend communicates with the backend via these endpoints:
 - POST /api/owners - Create new owner
 - PUT /api/owners/{id} - Update owner
 - DELETE /api/owners/{id} - Delete owner
+
+### Leases
+- GET /api/leases - List all leases
+- GET /api/leases/{id} - Get lease by ID
+- POST /api/leases - Create new lease
+- PUT /api/leases/{id} - Update lease
+- DELETE /api/leases/{id} - Delete lease
+
+### Payments
+- GET /api/payments - List all payments
+- GET /api/payments/{id} - Get payment by ID
+- POST /api/payments - Create new payment
+- PUT /api/payments/{id} - Update payment
+- DELETE /api/payments/{id} - Delete payment
+
+### Maintenance Requests
+- GET /api/requests - List all maintenance requests
+- GET /api/requests/{id} - Get maintenance request by ID
+- POST /api/requests - Create new maintenance request
+- PUT /api/requests/{id} - Update maintenance request
+- DELETE /api/requests/{id} - Delete maintenance request
 
 ### Authentication
 The API uses HTTP Basic Authentication for protected endpoints.

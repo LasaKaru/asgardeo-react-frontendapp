@@ -21,6 +21,8 @@ import React, { FunctionComponent, ReactElement, useCallback, useContext, useEff
 import { useNavigate } from "react-router-dom";
 import { CustomAuthContext } from "../app";
 import { default as authConfig } from "../config.json";
+import Real2Gif from '../images/Real1.png';
+import Real2Png from '../images/Real2.png';
 
 interface DerivedState {
     authenticateResponse: BasicUserInfo,
@@ -48,10 +50,26 @@ export const LoginPage: FunctionComponent = (): ReactElement => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     
+    // GIF state
+    const [randomGif, setRandomGif] = useState('');
+    
     // Asgardeo state
     const [ derivedAuthenticationState, setDerivedAuthenticationState ] = useState<DerivedState>(null);
     const [ hasAuthenticationErrors, setHasAuthenticationErrors ] = useState<boolean>(false);
     const [ hasLogoutFailureError, setHasLogoutFailureError ] = useState<boolean>();
+
+    // Select a random GIF on component mount
+    // useEffect(() => {
+    //     const gifs = ['../images/Real2.gif', '/images/Real2.png'];
+    //     const randomIndex = Math.floor(Math.random() * gifs.length);
+    //     setRandomGif(gifs[randomIndex]);
+    // }, []);
+    useEffect(() => {
+    // Use the imported variables which contain the correct final URL
+    const gifs = [Real2Gif, Real2Png]; 
+    const randomIndex = Math.floor(Math.random() * gifs.length);
+    setRandomGif(gifs[randomIndex]);
+}, []);
 
     // Handle Asgardeo authentication
 
@@ -132,72 +150,84 @@ export const LoginPage: FunctionComponent = (): ReactElement => {
                     <p>Manage properties, tenants, leases and payments</p>
                 </div>
                 
-                <div className="login-content">
-                    <div className="asgardeo-login">
-                        <h3>Sign in to your account</h3>
-                        {error && <div className="error-message">{error}</div>}
-                        <button
-                            className="btn primary asgardeo-btn login-btn"
-                            onClick={() => {
-                                handleAsgardeoLogin();
-                            }}
-                        >
-                            <span className="asgardeo-icon">🔒</span>
-                            Login with Asgardeo
-                        </button>
-                        <div className="divider">
-                            <span>or</span>
-                        </div>
-                        
-                        <form onSubmit={handleCustomLogin} className="custom-login-form">
-                            <h4>Custom Login</h4>
-                            <div className="form-group">
-                                <label htmlFor="username">Username</label>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="Enter username"
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="password">Password</label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Enter password"
-                                    required
-                                />
-                            </div>
+                <div className="login-content split-layout">
+                    <div className="gif-section">
+                        {randomGif && (
+                            <img 
+                                src={randomGif} 
+                                alt="Real Estate" 
+                                className="login-gif"
+                            />
+                        )}
+                    </div>
+                    
+                    <div className="login-form-section">
+                        <div className="asgardeo-login">
+                            <h3>Sign in to your account</h3>
+                            {error && <div className="error-message">{error}</div>}
                             <button
-                                type="submit"
-                                className="btn primary login-btn"
-                            >
-                                Sign In
-                            </button>
-                        </form>
-                        
-                        <div className="demo-login-section">
-                            <button
-                                className="btn secondary demo-btn login-btn"
+                                className="btn primary asgardeo-btn login-btn"
                                 onClick={() => {
-                                    // For demo purposes, automatically login with admin credentials
-                                    customAuth.login('admin', 'admin123')
-                                        .then(success => {
-                                            if (success) {
-                                                navigate('/dashboard');
-                                            } else {
-                                                setError('Demo login failed.');
-                                            }
-                                        });
+                                    handleAsgardeoLogin();
                                 }}
                             >
-                                Demo Login (admin/admin123)
+                                <span className="asgardeo-icon">🔒</span>
+                                Login with Asgardeo
                             </button>
+                            <div className="divider">
+                                <span>or</span>
+                            </div>
+                            
+                            <form onSubmit={handleCustomLogin} className="custom-login-form">
+                                <h4>Custom Login</h4>
+                                <div className="form-group">
+                                    <label htmlFor="username">Username</label>
+                                    <input
+                                        type="text"
+                                        id="username"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        placeholder="Enter username"
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="password">Password</label>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="Enter password"
+                                        required
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="btn primary login-btn"
+                                >
+                                    Sign In
+                                </button>
+                            </form>
+                            
+                            <div className="demo-login-section">
+                                <button
+                                    className="btn secondary demo-btn login-btn"
+                                    onClick={() => {
+                                        // For demo purposes, automatically login with admin credentials
+                                        customAuth.login('admin', 'admin123')
+                                            .then(success => {
+                                                if (success) {
+                                                    navigate('/dashboard');
+                                                } else {
+                                                    setError('Demo login failed.');
+                                                }
+                                            });
+                                    }}
+                                >
+                                    Demo Login (admin/admin123)
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
