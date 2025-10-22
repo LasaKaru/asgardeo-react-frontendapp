@@ -1,4 +1,5 @@
 # Real Estate Management System
+<img width="789" height="598" alt="login" src="https://github.com/user-attachments/assets/50093aaf-abec-4d15-bdc1-6c1f2f67d921" />
 
 A comprehensive frontend application for managing real estate properties, tenants, owners, leases, payments, and maintenance requests.
 
@@ -111,6 +112,8 @@ The frontend communicates with the backend via these endpoints:
 
 ### Authentication
 The API uses HTTP Basic Authentication for protected endpoints.
+<img width="1111" height="681" alt="as" src="https://github.com/user-attachments/assets/ae29788c-6ce7-4bf9-93cd-491fcc4217a2" />
+<img width="1355" height="683" alt="dash" src="https://github.com/user-attachments/assets/422ec51f-600f-4222-a60b-6d494c01b2f9" />
 
 ## License
 
