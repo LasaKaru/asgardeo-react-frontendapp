@@ -6,8 +6,9 @@ Write-Host "Real Estate Microservices Startup" -ForegroundColor Blue
 Write-Host "=========================================" -ForegroundColor Blue
 Write-Host ""
 
-# Define services
+# Define services (API Gateway first, then microservices)
 $services = @(
+    @{Name="API Gateway"; Port=8080; Dir="APIGateway"},
     @{Name="Auth Service"; Port=5000; Dir="AuthService.API"},
     @{Name="Property Service"; Port=5001; Dir="PropertyService.API"},
     @{Name="Owner Service"; Port=5002; Dir="OwnerService.API"},
@@ -52,7 +53,14 @@ Write-Host "All services are starting!" -ForegroundColor Green
 Write-Host "=========================================" -ForegroundColor Green
 Write-Host ""
 
-Write-Host "Service URLs:" -ForegroundColor Cyan
+Write-Host "API Gateway (Main Entry Point):" -ForegroundColor Cyan
+Write-Host "  Gateway URL:         http://localhost:8080"
+Write-Host "  Gateway Swagger:     http://localhost:8080/swagger"
+Write-Host "  Gateway Info:        http://localhost:8080/gateway-info"
+Write-Host "  Services Status:     http://localhost:8080/api/gateway/services-status"
+Write-Host ""
+
+Write-Host "Microservices (Backend):" -ForegroundColor Cyan
 Write-Host "  Auth Service:        http://localhost:5000"
 Write-Host "  Property Service:    http://localhost:5001"
 Write-Host "  Owner Service:       http://localhost:5002"
@@ -63,7 +71,8 @@ Write-Host "  Maintenance Service: http://localhost:5006"
 Write-Host ""
 
 Write-Host "Swagger Documentation:" -ForegroundColor Cyan
-Write-Host "  http://localhost:5000/swagger"
+Write-Host "  Gateway Swagger:     http://localhost:8080/swagger"
+Write-Host "  Auth Swagger:        http://localhost:5000/swagger"
 Write-Host "  http://localhost:5001/swagger"
 Write-Host "  http://localhost:5002/swagger"
 Write-Host "  http://localhost:5003/swagger"

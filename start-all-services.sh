@@ -16,6 +16,7 @@ NC='\033[0m' # No Color
 
 # Check if all service directories exist
 SERVICES=(
+    "APIGateway:8080"
     "AuthService.API:5000"
     "PropertyService.API:5001"
     "OwnerService.API:5002"
@@ -73,7 +74,9 @@ start_service() {
     fi
 }
 
-# Start all services
+# Start all services (API Gateway first, then microservices)
+start_service "API Gateway" "8080" "APIGateway"
+sleep 2  # Give gateway time to start
 start_service "Auth Service" "5000" "AuthService.API"
 start_service "Property Service" "5001" "PropertyService.API"
 start_service "Owner Service" "5002" "OwnerService.API"
@@ -87,7 +90,13 @@ echo -e "${GREEN}=========================================${NC}"
 echo -e "${GREEN}All services are starting!${NC}"
 echo -e "${GREEN}=========================================${NC}"
 echo ""
-echo -e "${BLUE}Service URLs:${NC}"
+echo -e "${BLUE}API Gateway (Main Entry Point):${NC}"
+echo "  Gateway URL:         http://localhost:8080"
+echo "  Gateway Swagger:     http://localhost:8080/swagger"
+echo "  Gateway Info:        http://localhost:8080/gateway-info"
+echo "  Services Status:     http://localhost:8080/api/gateway/services-status"
+echo ""
+echo -e "${BLUE}Microservices (Backend):${NC}"
 echo "  Auth Service:        http://localhost:5000"
 echo "  Property Service:    http://localhost:5001"
 echo "  Owner Service:       http://localhost:5002"
@@ -97,7 +106,8 @@ echo "  Payment Service:     http://localhost:5005"
 echo "  Maintenance Service: http://localhost:5006"
 echo ""
 echo -e "${BLUE}Swagger Documentation:${NC}"
-echo "  http://localhost:5000/swagger"
+echo "  Gateway Swagger:     http://localhost:8080/swagger"
+echo "  Auth Swagger:        http://localhost:5000/swagger"
 echo "  http://localhost:5001/swagger"
 echo "  http://localhost:5002/swagger"
 echo "  http://localhost:5003/swagger"
