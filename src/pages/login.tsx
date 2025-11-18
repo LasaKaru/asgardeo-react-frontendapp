@@ -23,6 +23,7 @@ import { CustomAuthContext } from "../app";
 import { default as authConfig } from "../config.json";
 import Real2Gif from '../images/Real1.png';
 import Real2Png from '../images/Real2.png';
+import authBackendService from '../services/authBackendService';
 
 interface DerivedState {
     authenticateResponse: BasicUserInfo,
@@ -80,20 +81,48 @@ export const LoginPage: FunctionComponent = (): ReactElement => {
         }
     }, [hasAuthenticationErrors]);
     
-    // Debugging: log authentication state
+    // Handle Asgardeo authentication and send tokens to backend
     useEffect(() => {
-        console.log('Login page auth state:', {
-            asgardeoState: state,
-            isAuthenticated: state?.isAuthenticated,
-            customIsAuthenticated: customAuth?.isAuthenticated
-        });
-        
-        // If user is authenticated, redirect to dashboard
-        if (state?.isAuthenticated) {
-            console.log('User authenticated via Asgardeo, redirecting to dashboard');
-            navigate('/dashboard');
-        }
-    }, [state, customAuth, navigate]);
+        const authenticateWithBackend = async () => {
+            if (state?.isAuthenticated) {
+                console.log('User authenticated via Asgardeo, sending tokens to backend');
+
+                try {
+                    // Get tokens from Asgardeo
+                    const accessToken = await asgardeoAuth.getAccessToken();
+                    const idToken = await asgardeoAuth.getIDToken();
+                    const decodedIdToken = await asgardeoAuth.getDecodedIDToken();
+
+                    console.log('Asgardeo tokens obtained, calling backend API');
+
+                    // Send tokens to backend for validation and storage
+                    const backendResponse = await authBackendService.loginWithAsgardeo({
+                        code: '', // Not needed as we already have tokens
+                        accessToken: accessToken,
+                        idToken: idToken,
+                        refreshToken: '', // Asgardeo SDK might not expose refresh token
+                        expiresIn: 3600, // Default expiry
+                        scope: decodedIdToken?.scope as string
+                    });
+
+                    if (backendResponse) {
+                        console.log('Backend authentication successful, redirecting to dashboard');
+                        navigate('/dashboard');
+                    } else {
+                        console.error('Backend authentication failed');
+                        setError('Failed to authenticate with backend service');
+                        await asgardeoSignOut();
+                    }
+                } catch (error) {
+                    console.error('Error during backend authentication:', error);
+                    setError('Failed to complete authentication process');
+                    // Don't sign out on error, let user retry
+                }
+            }
+        };
+
+        authenticateWithBackend();
+    }, [state?.isAuthenticated]);
 
     const handleAsgardeoLogin = useCallback(() => {
         setHasLogoutFailureError(false);

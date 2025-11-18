@@ -1,7 +1,10 @@
-import React, { FunctionComponent, ReactElement, useContext, useEffect } from "react";
+import React, { FunctionComponent, ReactElement, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "@asgardeo/auth-react";
 import { CustomAuthContext } from "../app";
+import { StatCard } from "../components/StatCard";
+import { ActivityFeed, Activity } from "../components/ActivityFeed";
+import apiService, { DashboardStats } from "../services/api";
 
 /**
  * Dashboard page for the Real Estate Management System.
@@ -18,6 +21,12 @@ export const DashboardPage: FunctionComponent = (): ReactElement => {
     const asgardeoIsAuthenticated = asgardeoAuth.state?.isAuthenticated;
     const customIsAuthenticated = customAuth?.isAuthenticated;
     const isAuthenticated = asgardeoIsAuthenticated || customIsAuthenticated;
+
+    // State for dashboard data
+    const [stats, setStats] = useState<DashboardStats | null>(null);
+    const [activities, setActivities] = useState<Activity[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     
     // Debugging: log authentication state
     React.useEffect(() => {
@@ -60,6 +69,48 @@ export const DashboardPage: FunctionComponent = (): ReactElement => {
         
         return () => clearTimeout(timer);
     }, [isAuthenticated, asgardeoAuth.state?.isAuthenticated, customAuth?.isAuthenticated, navigate]);
+
+    // Fetch dashboard data
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            if (!isAuthenticated) return;
+
+            try {
+                setLoading(true);
+                setError(null);
+
+                // Fetch stats and activities in parallel
+                const [statsResponse, activitiesResponse] = await Promise.allSettled([
+                    apiService.getDashboardStats(),
+                    apiService.getRecentActivities()
+                ]);
+
+                if (statsResponse.status === 'fulfilled') {
+                    setStats(statsResponse.value.data);
+                } else {
+                    console.error('Error fetching stats:', statsResponse.reason);
+                }
+
+                if (activitiesResponse.status === 'fulfilled') {
+                    setActivities(activitiesResponse.value.data);
+                } else {
+                    console.error('Error fetching activities:', activitiesResponse.reason);
+                }
+
+                // Only set error if both requests failed
+                if (statsResponse.status === 'rejected' && activitiesResponse.status === 'rejected') {
+                    setError('Failed to load dashboard data. Please try again.');
+                }
+            } catch (err) {
+                console.error('Dashboard data fetch error:', err);
+                setError('An unexpected error occurred. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, [isAuthenticated]);
     
     // Show loading state while checking authentication
     if (!isAuthenticated) {
@@ -116,65 +167,135 @@ export const DashboardPage: FunctionComponent = (): ReactElement => {
                     <li><a href="#" onClick={handleLogout} className="logout-link">Logout</a></li>
                 </ul>
             </nav>
-            
+
             <div className="dashboard-content">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h2>Dashboard</h2>
+                <div className="dashboard-header">
+                    <div>
+                        <h2>Dashboard</h2>
+                        <p className="dashboard-subtitle">Welcome back! Here's what's happening with your properties today.</p>
+                    </div>
                     <button className="btn secondary" onClick={handleLogout}>Logout</button>
                 </div>
-                
-                <div className="stats-grid">
-                    <div className="stat-card">
-                        <h3>Total Properties</h3>
-                        <div className="value">24</div>
+
+                {error && (
+                    <div className="error-banner">
+                        <span>⚠️ {error}</span>
+                        <button onClick={() => window.location.reload()} className="btn primary" style={{ marginLeft: '10px', padding: '5px 15px' }}>
+                            Retry
+                        </button>
                     </div>
-                    <div className="stat-card">
-                        <h3>Total Tenants</h3>
-                        <div className="value">42</div>
-                    </div>
-                    <div className="stat-card">
-                        <h3>Active Leases</h3>
-                        <div className="value">18</div>
-                    </div>
-                    <div className="stat-card">
-                        <h3>Pending Maintenance</h3>
-                        <div className="value">7</div>
+                )}
+
+                {/* Main Statistics Grid */}
+                <div className="stats-grid-modern">
+                    <StatCard
+                        title="Total Properties"
+                        value={stats?.counts.properties ?? 0}
+                        icon="🏢"
+                        color="#2c7be5"
+                        loading={loading}
+                    />
+                    <StatCard
+                        title="Property Owners"
+                        value={stats?.counts.owners ?? 0}
+                        icon="👔"
+                        color="#fd7e14"
+                        loading={loading}
+                    />
+                    <StatCard
+                        title="Active Tenants"
+                        value={stats?.counts.tenants ?? 0}
+                        icon="👥"
+                        color="#6f42c1"
+                        loading={loading}
+                    />
+                    <StatCard
+                        title="Active Leases"
+                        value={stats?.counts.activeLeases ?? 0}
+                        icon="📝"
+                        color="#20c997"
+                        loading={loading}
+                    />
+                </div>
+
+                {/* Revenue and Payment Statistics */}
+                <div className="dashboard-section">
+                    <h3 className="section-title">Financial Overview</h3>
+                    <div className="stats-grid-modern">
+                        <StatCard
+                            title="Total Revenue"
+                            value={`$${stats?.revenue.total.toLocaleString() ?? 0}`}
+                            icon="💰"
+                            color="#28a745"
+                            trend="up"
+                            changePercent={12.5}
+                            subtitle="From paid invoices"
+                            loading={loading}
+                        />
+                        <StatCard
+                            title="Pending Payments"
+                            value={`$${stats?.revenue.pending.toLocaleString() ?? 0}`}
+                            icon="⏳"
+                            color="#ffc107"
+                            subtitle={`${stats?.counts.pendingPayments ?? 0} invoices pending`}
+                            loading={loading}
+                        />
+                        <StatCard
+                            title="Occupancy Rate"
+                            value={`${stats?.occupancy.rate ?? 0}%`}
+                            icon="📊"
+                            color="#17a2b8"
+                            trend={stats && stats.occupancy.rate > 80 ? 'up' : 'neutral'}
+                            subtitle={`${stats?.occupancy.occupied ?? 0} of ${stats?.occupancy.total ?? 0} properties`}
+                            loading={loading}
+                        />
+                        <StatCard
+                            title="Maintenance Requests"
+                            value={stats?.counts.openMaintenanceRequests ?? 0}
+                            icon="🔧"
+                            color="#dc3545"
+                            subtitle="Open requests"
+                            loading={loading}
+                        />
                     </div>
                 </div>
-                
-                <h3>Recent Activity</h3>
-                <div className="data-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Activity</th>
-                                <th>User</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>2023-06-15</td>
-                                <td>New property added</td>
-                                <td>Admin</td>
-                            </tr>
-                            <tr>
-                                <td>2023-06-14</td>
-                                <td>Lease signed</td>
-                                <td>Admin</td>
-                            </tr>
-                            <tr>
-                                <td>2023-06-12</td>
-                                <td>Maintenance request</td>
-                                <td>Tenant #12</td>
-                            </tr>
-                            <tr>
-                                <td>2023-06-10</td>
-                                <td>Payment received</td>
-                                <td>Tenant #8</td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                {/* Payment Status Breakdown */}
+                <div className="dashboard-section">
+                    <h3 className="section-title">Payment Status</h3>
+                    <div className="payment-breakdown">
+                        <div className="payment-status-card paid">
+                            <div className="payment-icon">✓</div>
+                            <div className="payment-info">
+                                <div className="payment-label">Paid</div>
+                                <div className="payment-count">{stats?.paymentBreakdown.paid ?? 0}</div>
+                            </div>
+                        </div>
+                        <div className="payment-status-card pending">
+                            <div className="payment-icon">⏱</div>
+                            <div className="payment-info">
+                                <div className="payment-label">Pending</div>
+                                <div className="payment-count">{stats?.paymentBreakdown.pending ?? 0}</div>
+                            </div>
+                        </div>
+                        <div className="payment-status-card overdue">
+                            <div className="payment-icon">!</div>
+                            <div className="payment-info">
+                                <div className="payment-label">Overdue</div>
+                                <div className="payment-count">{stats?.paymentBreakdown.overdue ?? 0}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Recent Activity Feed */}
+                <div className="dashboard-section">
+                    <h3 className="section-title">Recent Activity</h3>
+                    <ActivityFeed
+                        activities={activities}
+                        loading={loading}
+                        maxItems={10}
+                    />
                 </div>
             </div>
         </div>
